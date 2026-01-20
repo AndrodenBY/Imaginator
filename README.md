@@ -5,6 +5,8 @@ Version: #1
 Imaginator is a console app that renders images as ASCII in terminal. Runs locally.
 *Prerequisites*: .NET version on 20.01.2025 and some images stored on your computer. With some small changes, it can run on older versions
 
+(Proof_Of_Work.png)
+
 ---
 ### Usage
 Run the console app and insert path to your file, then it will render this image using ASCII characters. Supports almost any image file
