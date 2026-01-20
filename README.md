@@ -24,9 +24,7 @@ Run the console app and insert path to your file, then it will render this image
 > 1. Fork repository and create feature branch
 > 2. Make your changes with understandable commits
 > 3. Open a pull request describing your changes
->
-> ---
-> But honestly, it's just my personal project I did when I was bored.
+> But honestly, it's just my personal project I did out of boredom.
 
 ---
 ## License
