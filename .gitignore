@@ -18,6 +18,4 @@ obj/
 /packages/
 riderModule.iml
 /_ReSharper.Caches/
-
-#Ignore cursor AI rules
-.cursor/rules/codacy.mdc
+.idea
