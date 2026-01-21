@@ -1,6 +1,7 @@
 using Imaginator.Interfaces;
+using Imaginator.Loaders;
 
-namespace Imaginator.Render;
+namespace Imaginator.Factories;
 
 public class LoaderFactory(LocalLoader localLoader, WebLoader webLoader)
 {

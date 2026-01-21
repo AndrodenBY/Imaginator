@@ -1,7 +1,7 @@
 using Imaginator.Helpers;
 using Imaginator.Interfaces;
 
-namespace Imaginator.Render;
+namespace Imaginator.Loaders;
 
 public class LocalLoader: IImageLoader
 {
