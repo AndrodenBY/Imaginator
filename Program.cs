@@ -1,4 +1,4 @@
-﻿using Imaginator.Render;
+﻿using Imaginator.Rendering;
 
 while (true)
 {
@@ -12,4 +12,10 @@ while (true)
     
     await AsciiMilator.Imaginate(path);
     Console.WriteLine("Press Control+C to exit...");
-}
+} //Записывать каждый фрейм в массив а потом выводить эти массивы попеременно
+//Посмотреть что быстрее рендеринг или вывод на консоль
+//Трехмерный массив возможно получится
+//комманды для тулы CLI
+//Деплой ее как отдельный package
+//Кеширование ее или еще чет
+//Span vs StringBuilder
