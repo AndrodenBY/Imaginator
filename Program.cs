@@ -1,4 +1,6 @@
-﻿while (true)
+﻿using Imaginator.Render;
+
+while (true)
 {
     Console.Write("Write filepath: ");
     string? path = Console.ReadLine();
@@ -8,6 +10,6 @@
         continue;
     }
     
-    Imaginator.AsciiMilator.Imaginate(path);
+    await AsciiMilator.Imaginate(path);
     Console.WriteLine("Press Control+C to exit...");
 }

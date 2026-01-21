@@ -1,15 +1,22 @@
+using Imaginator.Interfaces;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 
-namespace Imaginator;
+
+namespace Imaginator.Render;
 
 public static class AsciiMilator
 {
-    public static void Imaginate(string path)
+    private static readonly LoaderFactory Factory = new(new LocalLoader(), new WebLoader());
+    
+    public static async Task Imaginate(string source)
     {
         try
         {
-            using var loadedImage = Image.Load<Rgba32>(path);
+            IImageLoader imageLoader = Factory.GetLoader(source);
+            
+            await using var imageStream = await imageLoader.GetImageStream(source);
+            using var loadedImage = await Image.LoadAsync<Rgba32>(imageStream);
             RenderInAscii(loadedImage);
         }
         catch (Exception exception)
