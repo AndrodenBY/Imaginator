@@ -1,17 +1,17 @@
-using System.Text;
+using Imaginator.Enums;
+using Imaginator.Factories;
 using Imaginator.Interfaces;
 using Imaginator.Loaders;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 
-
-namespace Imaginator.Rendering;
+namespace Imaginator.Graphics;
 
 public static class AsciiMilator
 {
     private static readonly LoaderFactory Factory = new(new LocalLoader(), new WebLoader());
     
-    public static async Task Imaginate(string source)
+    public static async Task Imaginate(string source, RenderMode mode)
     {
         try
         {
@@ -19,7 +19,7 @@ public static class AsciiMilator
             
             await using var imageStream = await imageLoader.GetImageStream(source);
             using var loadedImage = await Image.LoadAsync<Rgba32>(imageStream);
-            AsciiMulator.RenderStaticImageInAscii(loadedImage);
+            AsciiMulator.RenderStaticImageInAscii(loadedImage, mode);
         }
         catch (Exception exception)
         {

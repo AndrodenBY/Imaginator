@@ -1,21 +1,19 @@
-﻿using Imaginator.Rendering;
+﻿using Imaginator.Enums;
+using Imaginator.Graphics;
 
 while (true)
 {
     Console.Write("Write filepath: ");
-    string? path = Console.ReadLine();
+    var path = Console.ReadLine();
+    Console.Write("Write mode(1 - plain, 2 - colored): ");
+    var inputMode = Convert.ToInt32(Console.ReadLine()); 
+    var mode = (RenderMode)inputMode;
     
     if (String.IsNullOrWhiteSpace(path))
     {
         continue;
     }
     
-    await AsciiMilator.Imaginate(path);
+    await AsciiMilator.Imaginate(path, mode);
     Console.WriteLine("Press Control+C to exit...");
-} //Записывать каждый фрейм в массив а потом выводить эти массивы попеременно
-//Посмотреть что быстрее рендеринг или вывод на консоль
-//Трехмерный массив возможно получится
-//комманды для тулы CLI
-//Деплой ее как отдельный package
-//Кеширование ее или еще чет
-//Span vs StringBuilder
+} 
