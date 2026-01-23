@@ -15,18 +15,22 @@ pipeline {
             }
         }
 
-        stage('Setup .NET 9.0 (like GitHub Actions)') {
+        stage('Install system dependencies') {
             steps {
                 sh '''
-                    echo "Installing .NET 9.0 SDK..."
+                    apt-get update
+                    apt-get install -y libicu-dev libssl-dev libcurl4-openssl-dev zlib1g libkrb5-3
+                '''
+            }
+        }
 
+        stage('Setup .NET 9.0') {
+            steps {
+                sh '''
                     mkdir -p $DOTNET_ROOT
                     curl -sSL https://dot.net/v1/dotnet-install.sh -o dotnet-install.sh
                     chmod +x dotnet-install.sh
-
                     ./dotnet-install.sh --channel 9.0 --install-dir $DOTNET_ROOT
-
-                    echo "Installed dotnet version:"
                     $DOTNET_ROOT/dotnet --version
                 '''
             }
@@ -43,13 +47,9 @@ pipeline {
         stage('Analyze') {
             steps {
                 script {
-                    def prArgs = ''
-
-                    if (env.CHANGE_ID) {
-                        prArgs = "/d:sonar.pullrequest.key=${env.CHANGE_ID} /d:sonar.pullrequest.branch=${env.CHANGE_BRANCH} /d:sonar.pullrequest.base=${env.CHANGE_TARGET}"
-                    } else {
-                        prArgs = "/d:sonar.branch.name=${env.BRANCH_NAME ?: 'main'}"
-                    }
+                    def prArgs = env.CHANGE_ID ?
+                    "/d:sonar.pullrequest.key=${env.CHANGE_ID} /d:sonar.pullrequest.branch=${env.CHANGE_BRANCH} /d:sonar.pullrequest.base=${env.CHANGE_TARGET}" :
+                    "/d:sonar.branch.name=${env.BRANCH_NAME ?: 'main'}"
 
                     sh """
                         dotnet sonarscanner begin \
