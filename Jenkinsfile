@@ -7,7 +7,7 @@ pipeline {
         // Local .NET installation directory
         DOTNET_ROOT = "${WORKSPACE}/.dotnet"
 
-        // Add local dotnet + global tools + system PATH
+        // Add local dotnet + local tools + global tools + system PATH
         PATH = "${WORKSPACE}/.dotnet:${WORKSPACE}/.dotnet/tools:/root/.dotnet/tools:${env.PATH}"
     }
 
@@ -22,6 +22,7 @@ pipeline {
         stage('Install system dependencies (ARM64)') {
             steps {
                 sh '''
+                    set -e
                     apt-get update
                     apt-get install -y \
                         libicu-dev \
@@ -36,14 +37,15 @@ pipeline {
         stage('Setup .NET 9 SDK') {
             steps {
                 sh '''
-                    mkdir -p $DOTNET_ROOT
+                    set -e
+                    mkdir -p "$DOTNET_ROOT"
                     curl -sSL https://dot.net/v1/dotnet-install.sh -o dotnet-install.sh
                     chmod +x dotnet-install.sh
 
-                    ./dotnet-install.sh --channel 9.0 --install-dir $DOTNET_ROOT
+                    ./dotnet-install.sh --channel 9.0 --install-dir "$DOTNET_ROOT"
 
                     echo "Installed .NET version:"
-                    $DOTNET_ROOT/dotnet --version
+                    "$DOTNET_ROOT/dotnet" --version
                 '''
             }
         }
@@ -51,8 +53,12 @@ pipeline {
         stage('Install SonarScanner') {
             steps {
                 sh '''
+                    set -e
+                    export DOTNET_ROOT="$DOTNET_ROOT"
+                    export PATH="$DOTNET_ROOT:$DOTNET_ROOT/tools:/root/.dotnet/tools:$PATH"
+
                     dotnet tool install --global dotnet-sonarscanner \
-                    || dotnet tool update --global dotnet-sonarscanner
+                      || dotnet tool update --global dotnet-sonarscanner
 
                     echo "Tools installed in /root/.dotnet/tools:"
                     ls -la /root/.dotnet/tools
@@ -66,21 +72,34 @@ pipeline {
                     def prArgs = ''
 
                     if (env.CHANGE_ID) {
-                        prArgs = "/d:sonar.pullrequest.key=${env.CHANGE_ID} " +
-                        "/d:sonar.pullrequest.branch=${env.CHANGE_BRANCH} " +
-                        "/d:sonar.pullrequest.base=${env.CHANGE_TARGET}"
+                        echo "PR build (Branch Source): #${env.CHANGE_ID}"
+                        prArgs =
+                                "/d:sonar.pullrequest.key=${env.CHANGE_ID} " +
+                                "/d:sonar.pullrequest.branch=${env.CHANGE_BRANCH} " +
+                                "/d:sonar.pullrequest.base=${env.CHANGE_TARGET}"
+                    } else if (env.ghprbPullId) {
+                        echo "PR build (GHPRB): #${env.ghprbPullId}"
+                        prArgs =
+                                "/d:sonar.pullrequest.key=${env.ghprbPullId} " +
+                                "/d:sonar.pullrequest.branch=${env.ghprbSourceBranch} " +
+                                "/d:sonar.pullrequest.base=${env.ghprbTargetBranch}"
                     } else {
-                        prArgs = "/d:sonar.branch.name=${env.BRANCH_NAME ?: 'main'}"
+                        def branch = env.BRANCH_NAME ?: 'main'
+                        echo "Branch build: ${branch}"
+                        prArgs = "/d:sonar.branch.name=${branch}"
                     }
 
                     sh """
-                        export PATH="\\\$PATH:/root/.dotnet/tools"
+                        set -e
+                        export DOTNET_ROOT="\$DOTNET_ROOT"
+                        export PATH="\$DOTNET_ROOT:\$DOTNET_ROOT/tools:/root/.dotnet/tools:\$PATH"
 
-                        dotnet sonarscanner begin \
-                          /k:"AndrodenBY_Imaginator" \
-                          /o:"androdenby" \
-                          /d:sonar.login="\\\${SONAR_TOKEN}" \
-                          /d:sonar.host.url="https://sonarcloud.io" \
+                        dotnet sonarscanner begin \\
+                          /k:"AndrodenBY_Imaginator" \\
+                          /o:"androdenby" \\
+                          /d:sonar.login="\\\${SONAR_TOKEN}" \\
+                          /d:sonar.host.url="https://sonarcloud.io" \\
+                          /d:sonar.exclusions="**/Migrations/**,**/Dockerfile,**/*appsettings*.json" \\
                           ${prArgs}
 
                         dotnet restore Imaginator.sln
