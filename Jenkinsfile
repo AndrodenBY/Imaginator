@@ -1,12 +1,8 @@
 pipeline {
-    agent {
-        docker {
-            image 'mcr.microsoft.com/dotnet/sdk:9.0'
-        }
-    }
+    agent any
 
     environment {
-        SONAR_TOKEN = credentials('sonar-token')
+        SONAR_TOKEN = credentials('sonar-token-jenkins')
     }
 
     stages {
@@ -19,8 +15,8 @@ pipeline {
         stage('Install SonarScanner') {
             steps {
                 sh '''
-          dotnet tool install --global dotnet-sonarscanner || dotnet tool update --global dotnet-sonarscanner
-        '''
+                    dotnet tool install --global dotnet-sonarscanner || dotnet tool update --global dotnet-sonarscanner
+                '''
             }
         }
 
@@ -42,21 +38,21 @@ pipeline {
                     }
 
                     sh """
-            export PATH="\\\$PATH:/root/.dotnet/tools"
+                        export PATH="\\\$PATH:/root/.dotnet/tools"
 
-            dotnet sonarscanner begin \
-              /k:"AndrodenBY_Imaginator" \
-              /o:"androdenby" \
-              /d:sonar.login="\\\${SONAR_TOKEN}" \
-              /d:sonar.host.url="https://sonarcloud.io" \
-              /d:sonar.exclusions="**/Migrations/**,**/Dockerfile,**/*appsettings*.json" \
-              ${prArgs}
+                        dotnet sonarscanner begin \
+                          /k:"AndrodenBY_Imaginator" \
+                          /o:"androdenby" \
+                          /d:sonar.login="\\\${SONAR_TOKEN}" \
+                          /d:sonar.host.url="https://sonarcloud.io" \
+                          /d:sonar.exclusions="**/Migrations/**,**/Dockerfile,**/*appsettings*.json" \
+                          ${prArgs}
 
-            dotnet restore Imaginator.sln
-            dotnet build Imaginator.sln --no-restore --configuration Release
+                        dotnet restore Imaginator.sln
+                        dotnet build Imaginator.sln --no-restore --configuration Release
 
-            dotnet sonarscanner end /d:sonar.login="\\\${SONAR_TOKEN}"
-          """
+                        dotnet sonarscanner end /d:sonar.login="\\\${SONAR_TOKEN}"
+                    """
                 }
             }
         }
