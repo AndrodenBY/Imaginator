@@ -21,5 +21,6 @@ riderModule.iml
 **/.idea/
 .idea/
 .DS_Store
-*.DotSettings.user
+Imaginator.sln.DotSettings.user
+.sonarqube
 
