@@ -6,103 +6,85 @@ using Imaginator.Constants;
 using Imaginator.Enums;
 using Imaginator.Factories;
 using Imaginator.Helpers;
+using Imaginator.Interfaces;
+using Imaginator.Renderers;
 
 namespace Imaginator.Graphics;
 
 public static class AsciiMulator
 {
-    private static bool _isRunning = true;
     
-    public static void RenderStaticImageInAscii(Image<Rgba32> loadedImage, RenderMode mode)
+    public static void RenderStaticImageInAscii(Image<Rgba32> image, RenderMode mode)
     {
-        var (width, height) = RenderSizing.GetRenderSize(loadedImage.Width, loadedImage.Height);
+        Console.Write(AnsiConstants.PrepareCanvas);
     
-        loadedImage.Mutate(x => x.Resize(width, height));
-        
-        var capacity = RenderSizing.GetBufferCapacity(width, height, mode);
-        var frameBuilder = new StringBuilder(capacity);
-        
-        frameBuilder.Append(AnsiConstants.HideCursor);
-        frameBuilder.Append(AnsiConstants.ClearScreen);
-        frameBuilder.Append(AnsiConstants.ToHome);
-
         var renderer = RendererFactory.RenderAscii(mode);
+        var frame = BuildFrame(image, renderer, mode);
     
-        loadedImage.ProcessPixelRows(accessor =>
-        {
-            for (var y = 0; y < accessor.Height; y++)
-            {
-                ReadOnlySpan<Rgba32> rowSpan = accessor.GetRowSpan(y);
-
-                foreach (ref readonly var pixel in rowSpan)
-                {
-                    frameBuilder.Append(renderer.RenderPixel(pixel));
-                }
-            
-                frameBuilder.Append(AnsiConstants.FrameLineEnd);
-            }
-        });
-        frameBuilder.Append(AnsiConstants.ResetTerminal);
-        Console.Write(frameBuilder.ToString());
+        Console.Write(frame);
+        Console.Write(AnsiConstants.ResetTerminal + "\n");
     }
     
-    public static async Task RenderAnimatedImage(Image<Rgba32> loadedGif, RenderMode mode)
+    public static async Task RenderAnimatedImage(Image<Rgba32> gif, RenderMode mode)
     {
         Console.Clear();
         Console.Write(AnsiConstants.HideCursor);
         
-        while (_isRunning)
+        IAsciiRenderer renderer = mode == RenderMode.Colored 
+            ? new ColoredAsciiRenderer() 
+            : new PlainAsciiRenderer();
+
+        bool isRunning = true;
+
+        while (isRunning)
         {
-            for (int i = 0; i < loadedGif.Frames.Count; i++)
+            for (int i = 0; i < gif.Frames.Count; i++)
             {
-                var gifFrame = loadedGif.Frames[i];
-                
-                Console.SetCursorPosition(0, 0);
-                Console.Write(AnsiConstants.ResetCursor);
-                
-                var (width, height) = RenderSizing.GetRenderSize(gifFrame.Width, gifFrame.Height);
-                
-                using (var frameImage = loadedGif.Frames.CloneFrame(i))
+                using (var frameImage = gif.Frames.CloneFrame(i))
                 {
-                    frameImage.Mutate(x => x.Resize(width, height));
-
-                    var stringBuilder = new StringBuilder();
-
-                    for (int y = 0; y < frameImage.Height; y++)
-                    {
-                        for (int x = 0; x < frameImage.Width; x++)
-                        {
-                            var pixel = frameImage[x, y];
-                            var character = GetAsciiCharacter(pixel);
-
-                            if (mode == RenderMode.Colored)
-                            {
-                                stringBuilder.AppendFormat("{Escape}38;2;{0};{1};{2}m{3}", AnsiConstants.Escape, pixel.R, pixel.G, pixel.B, character);
-                            }
-                            else
-                            {
-                                stringBuilder.Append(character);
-                            }
-                        }
-                        stringBuilder.Append(AnsiConstants.FrameLineEnd);
-                    }
-
-                    Console.Write(stringBuilder.ToString());
+                    string frameContent = BuildFrame(frameImage, renderer, mode);
+                
+                    Console.SetCursorPosition(0, 0);
+                    Console.Write(AnsiConstants.ResetCursor + frameContent);
                 }
                 
-                await Task.Delay(MediaHelper.GetDelay(gifFrame));
-                
-                if (Console.KeyAvailable)
+                var delay = gif.Frames[i].Metadata.GetGifMetadata().FrameDelay;
+                await Task.Delay(delay > 0 ? delay * 10 : 100);
+
+                if (Console.KeyAvailable && Console.ReadKey(true).Key == ConsoleKey.Escape)
                 {
-                    Console.ReadKey(false);
-                    _isRunning = false;
-                    break; 
+                    isRunning = false;
+                    break;
                 }
             }
         }
-        
+
         Console.Write(AnsiConstants.ResetTerminal);
-        Console.Clear();
+    }
+
+    private static string BuildFrame(Image<Rgba32> frame, IAsciiRenderer renderer, RenderMode mode)
+    {
+        var (width, height) = RenderSizing.GetRenderSize(frame.Width, frame.Height);
+        
+        frame.Mutate(x => x.Resize(width, height));
+        
+        var capacity = RenderSizing.GetBufferCapacity(width, height, mode);
+        var sb = new StringBuilder(capacity);
+
+        frame.ProcessPixelRows(accessor =>
+        {
+            for (var y = 0; y < accessor.Height; y++)
+            {
+                var rowSpan = accessor.GetRowSpan(y);
+                foreach (ref readonly var pixel in rowSpan)
+                {
+                    sb.Append(renderer.RenderPixel(pixel));
+                }
+                sb.Append(AnsiConstants.FrameLineEnd);
+            }
+        });
+
+        return sb.ToString();
     }
     
     private static char GetAsciiCharacter(Rgba32 pixel)
