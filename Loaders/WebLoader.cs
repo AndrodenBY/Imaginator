@@ -9,7 +9,7 @@ public class WebLoader: IImageLoader
 
     static WebLoader()
     {
-        HttpClient.DefaultRequestHeaders.UserAgent.ParseAdd(ProgramConstants.UserAgentHeader);
+        HttpClient.DefaultRequestHeaders.UserAgent.ParseAdd(ImaginatorMetadata.UserAgentHeader);
     }
     
     public async Task<Stream> GetImageStream(string source)
