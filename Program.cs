@@ -3,17 +3,24 @@ using Imaginator.Graphics;
 
 while (true)
 {
-    Console.Write("Write filepath: ");
+    Console.Write("Write filepath or URL: ");
     var path = Console.ReadLine();
-    Console.Write("Write mode(1 - plain, 2 - colored): ");
-    var inputMode = Convert.ToInt32(Console.ReadLine()); 
-    var mode = (RenderMode)inputMode;
     
-    if (String.IsNullOrWhiteSpace(path))
+    if (!File.Exists(path))
     {
+        Console.WriteLine("File not found.");
         continue;
     }
     
+    Console.Write("Plain(1) or Colored(2): ");
+    var input = Console.ReadLine();
+    
+    if (!Enum.TryParse<RenderMode>(input, out var mode))
+    {
+        mode = RenderMode.Plain;
+    }
+    
+    if (string.IsNullOrWhiteSpace(path)) continue;
+
     await AsciiMilator.Imaginate(path, mode);
-    Console.WriteLine("Press Control+C to exit...");
-} 
+}

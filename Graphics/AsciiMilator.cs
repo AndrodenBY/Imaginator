@@ -1,3 +1,4 @@
+using Imaginator.Constants;
 using Imaginator.Enums;
 using Imaginator.Factories;
 using Imaginator.Interfaces;
@@ -15,15 +16,23 @@ public static class AsciiMilator
     {
         try
         {
-            IImageLoader imageLoader = Factory.GetLoader(source);
+            var imageLoader = Factory.GetLoader(source);
             
             await using var imageStream = await imageLoader.GetImageStream(source);
             using var loadedImage = await Image.LoadAsync<Rgba32>(imageStream);
-            AsciiMulator.RenderStaticImageInAscii(loadedImage, mode);
+
+            if (loadedImage.Frames.Count > 1)
+            {
+                await AsciiMulator.RenderAnimatedImageInAscii(loadedImage, mode);
+            }
+            else
+            {
+                AsciiMulator.RenderStaticImageInAscii(loadedImage, mode);
+            }
         }
         catch (Exception exception)
         {
-            Console.WriteLine($"{Constants.ErrorMessage}: {exception.Message}");
+            Console.WriteLine($"{ProgramConstants.ErrorMessage}: {exception.Message}");
         }
     }
 }

@@ -10,9 +10,8 @@ public static class RendererFactory
     {
         return mode switch
         {
-            RenderMode.Colored => new ColoredAsciiRenderer(), 
-            RenderMode.Plain => new PlainAsciiRenderer(),
-            RenderMode.None => new PlainAsciiRenderer()
+            RenderMode.Colored => new ColoredAsciiRenderer(),
+            _ => new PlainAsciiRenderer()
         };
     }
 }
