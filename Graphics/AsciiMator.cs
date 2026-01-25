@@ -10,7 +10,7 @@ using Imaginator.Interfaces;
 
 namespace Imaginator.Graphics;
 
-public static class AsciiMulator
+public static class AsciiMator
 {
     
     public static void RenderStaticImageInAscii(Image<Rgba32> image, RenderMode mode)

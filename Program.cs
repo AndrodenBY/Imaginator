@@ -22,5 +22,5 @@ while (true)
     
     if (string.IsNullOrWhiteSpace(path)) continue;
 
-    await AsciiMilator.Imaginate(path, mode);
+    await AsciiShow.Imaginate(path, mode);
 }

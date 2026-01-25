@@ -8,7 +8,7 @@ using SixLabors.ImageSharp.PixelFormats;
 
 namespace Imaginator.Graphics;
 
-public static class AsciiMilator
+public static class AsciiShow
 {
     private static readonly LoaderFactory Factory = new(new LocalLoader(), new WebLoader());
     
@@ -23,16 +23,16 @@ public static class AsciiMilator
 
             if (loadedImage.Frames.Count > 1)
             {
-                await AsciiMulator.RenderAnimatedImageInAscii(loadedImage, mode);
+                await AsciiMator.RenderAnimatedImageInAscii(loadedImage, mode);
             }
             else
             {
-                AsciiMulator.RenderStaticImageInAscii(loadedImage, mode);
+                AsciiMator.RenderStaticImageInAscii(loadedImage, mode);
             }
         }
         catch (Exception exception)
         {
-            Console.WriteLine($"{ProgramConstants.ErrorMessage}: {exception.Message}");
+            Console.WriteLine($"{ImaginatorMetadata.ErrorMessage}: {exception.Message}");
         }
     }
 }

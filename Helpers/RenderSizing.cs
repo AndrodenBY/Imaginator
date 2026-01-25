@@ -32,8 +32,7 @@ public static class RenderSizing
 
         var contentSize = width * height * pixelDensity;
         var lineWrappingSize = height * AnsiConstants.FrameLineEnd.Length;
-        var terminalCommandSize = RenderSettings.BufferServicePadding;
         
-        return contentSize + lineWrappingSize + terminalCommandSize;
+        return contentSize + lineWrappingSize + RenderSettings.BufferServicePadding;
     }
 }

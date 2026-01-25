@@ -1,3 +1,4 @@
+using Imaginator.Constants;
 using Imaginator.Helpers;
 using Imaginator.Interfaces;
 using SixLabors.ImageSharp.PixelFormats;
@@ -9,8 +10,8 @@ public class ColoredAsciiRenderer : IAsciiRenderer
     public string RenderPixel(Rgba32 pixel)
     {
         var ascii = AnsiColorMapper.MapToAscii(pixel); 
-        var color = AnsiColor.Rgb(pixel.R, pixel.G, pixel.B); 
+        var color = AnsiColor.MakeRgb(pixel.R, pixel.G, pixel.B); 
         
-        return $"{color}{ascii}{AnsiColor.Reset}";
+        return $"{color}{ascii}{AnsiConstants.ResetCursor}";
     }
 }
