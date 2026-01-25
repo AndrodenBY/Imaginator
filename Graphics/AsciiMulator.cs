@@ -7,7 +7,6 @@ using Imaginator.Enums;
 using Imaginator.Factories;
 using Imaginator.Helpers;
 using Imaginator.Interfaces;
-using Imaginator.Renderers;
 
 namespace Imaginator.Graphics;
 
@@ -25,36 +24,39 @@ public static class AsciiMulator
         Console.Write(AnsiConstants.ResetTerminal + "\n");
     }
     
-    public static async Task RenderAnimatedImage(Image<Rgba32> gif, RenderMode mode)
+    public static async Task RenderAnimatedImageInAscii(Image<Rgba32> gif, RenderMode mode)
     {
         Console.Clear();
         Console.Write(AnsiConstants.HideCursor);
         
-        IAsciiRenderer renderer = mode == RenderMode.Colored 
-            ? new ColoredAsciiRenderer() 
-            : new PlainAsciiRenderer();
-
-        bool isRunning = true;
+        var renderer = RendererFactory.RenderAscii(mode);
+        var isRunning = true;
 
         while (isRunning)
         {
             for (int i = 0; i < gif.Frames.Count; i++)
             {
+                
                 using (var frameImage = gif.Frames.CloneFrame(i))
                 {
-                    string frameContent = BuildFrame(frameImage, renderer, mode);
+                    var frameContent = BuildFrame(frameImage, renderer, mode);
                 
                     Console.SetCursorPosition(0, 0);
                     Console.Write(AnsiConstants.ResetCursor + frameContent);
                 }
                 
-                var delay = gif.Frames[i].Metadata.GetGifMetadata().FrameDelay;
-                await Task.Delay(delay > 0 ? delay * 10 : 100);
+                var gifFrame = gif.Frames[i];
+                await Task.Delay(MediaHelper.GetDelay(gifFrame));
 
-                if (Console.KeyAvailable && Console.ReadKey(true).Key == ConsoleKey.Escape)
+                if (Console.KeyAvailable)
                 {
-                    isRunning = false;
-                    break;
+                    var key = Console.ReadKey(intercept: true).Key;
+                    
+                    if (key == ConsoleKey.Escape || key == ConsoleKey.Enter)
+                    {
+                        isRunning = false;
+                        break; 
+                    }
                 }
             }
         }
@@ -62,37 +64,29 @@ public static class AsciiMulator
         Console.Write(AnsiConstants.ResetTerminal);
     }
 
-    private static string BuildFrame(Image<Rgba32> frame, IAsciiRenderer renderer, RenderMode mode)
+    private static string BuildFrame(Image<Rgba32> loadedFrame, IAsciiRenderer renderer, RenderMode mode)
     {
-        var (width, height) = RenderSizing.GetRenderSize(frame.Width, frame.Height);
+        var (width, height) = RenderSizing.GetRenderSize(loadedFrame.Width, loadedFrame.Height);
         
-        frame.Mutate(x => x.Resize(width, height));
+        loadedFrame.Mutate(x => x.Resize(width, height));
         
         var capacity = RenderSizing.GetBufferCapacity(width, height, mode);
-        var sb = new StringBuilder(capacity);
+        var frameBuilder = new StringBuilder(capacity);
 
-        frame.ProcessPixelRows(accessor =>
+        loadedFrame.ProcessPixelRows(accessor =>
         {
             for (var y = 0; y < accessor.Height; y++)
             {
                 var rowSpan = accessor.GetRowSpan(y);
                 foreach (ref readonly var pixel in rowSpan)
                 {
-                    sb.Append(renderer.RenderPixel(pixel));
+                    frameBuilder.Append(renderer.RenderPixel(pixel));
                 }
-                sb.Append(AnsiConstants.FrameLineEnd);
+                frameBuilder.Append(AnsiConstants.FrameLineEnd);
             }
         });
 
-        return sb.ToString();
-    }
-    
-    private static char GetAsciiCharacter(Rgba32 pixel)
-    {
-        var brightness = pixel.R * RenderSettings.RedWeight + pixel.G * RenderSettings.GreenWeight + pixel.B * RenderSettings.BlueWeight;
-        var index = (int)(brightness * (RenderSettings.AsciiSymbols.Length - MediaSettings.IndexOffset) / RenderSettings.MaxByteValue);
-
-        return RenderSettings.AsciiSymbols[index];
+        return frameBuilder.ToString();
     }
 }
 

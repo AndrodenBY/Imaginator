@@ -1,3 +1,5 @@
+using Imaginator.Constants;
+
 namespace Imaginator.Helpers;
 
 public static class FileStreamHelper
@@ -8,7 +10,7 @@ public static class FileStreamHelper
             FileMode.Open, 
             FileAccess.Read, 
             FileShare.Read, 
-            Constants.DefaultBufferSize, 
+            TerminalConstants.DefaultBufferSize, 
             true
         );
 }

@@ -1,3 +1,4 @@
+using Imaginator.Constants;
 using Imaginator.Interfaces;
 
 namespace Imaginator.Loaders;
@@ -8,7 +9,7 @@ public class WebLoader: IImageLoader
 
     static WebLoader()
     {
-        HttpClient.DefaultRequestHeaders.UserAgent.ParseAdd(Constants.UserAgentHeader);
+        HttpClient.DefaultRequestHeaders.UserAgent.ParseAdd(ProgramConstants.UserAgentHeader);
     }
     
     public async Task<Stream> GetImageStream(string source)
