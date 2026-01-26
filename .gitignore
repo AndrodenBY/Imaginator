@@ -18,6 +18,9 @@ obj/
 /packages/
 riderModule.iml
 /_ReSharper.Caches/
+**/.idea/
+.idea/
+.DS_Store
+Imaginator.sln.DotSettings.user
+.sonarqube
 
-#Ignore cursor AI rules
-.cursor/rules/codacy.mdc
