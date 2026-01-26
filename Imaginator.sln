@@ -1,7 +1,5 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Imaginator_CLI", "Imaginator_CLI", "{60CF2472-E433-C7F0-398D-78F5E11045AD}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Imaginator", "Imaginator_CLI\Imaginator.csproj", "{561E0168-2957-4E32-9F3A-8B56BB217884}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Imaginator.Tests", "Imaginator.Tests\Imaginator.Tests.csproj", "{8197F750-D056-4684-A501-C6442D861030}"
@@ -45,6 +43,5 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{561E0168-2957-4E32-9F3A-8B56BB217884} = {60CF2472-E433-C7F0-398D-78F5E11045AD}
 	EndGlobalSection
 EndGlobal
