@@ -82,7 +82,7 @@ public static class AsciiMator
                 {
                     frameBuilder.Append(renderer.RenderPixel(pixel));
                 }
-                frameBuilder.Append(AnsiConstants.FrameLineEnd);
+                frameBuilder.Append(AnsiConstants.ResetColor).Append(AnsiConstants.FrameLineEnd);
             }
         });
 

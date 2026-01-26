@@ -12,6 +12,6 @@ public class ColoredAsciiRenderer : IAsciiRenderer
         var ascii = AnsiColorMapper.MapToAscii(pixel); 
         var color = AnsiColor.MakeRgb(pixel.R, pixel.G, pixel.B); 
         
-        return $"{color}{ascii}{AnsiConstants.ResetCursor}";
+        return $"{color}{ascii}";
     }
 }

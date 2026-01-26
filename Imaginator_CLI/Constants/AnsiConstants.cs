@@ -10,6 +10,7 @@ public static class AnsiConstants
     private const string ShowCursor = Escape + "?25h";
     public const string FrameLineEnd = Escape + "K\n";
     public const string ForegroundRgb = Escape + "38;2;";
+    public const string ResetColor = Escape + "0m";
     public const string ResetTerminal = ResetStyle + ShowCursor;
     public const string PrepareCanvas = ClearScreen + HideCursor + ResetCursor;
 }   
