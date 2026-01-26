@@ -19,4 +19,4 @@ while (true)
     await AsciiShow.Imaginate(path, mode);
 }
 
-//TODO: add modes, Rainbow, Red only, Blue only, Green only(like in Fallout)/Users/androden/Downloads/cat.gif
+//TODO: add modes, Rainbow, Red only, Blue only, Green only(like in Fallout)
