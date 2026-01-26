@@ -1,8 +1,6 @@
 using Imaginator.Constants;
 using Imaginator.Enums;
 using Imaginator.Factories;
-using Imaginator.Interfaces;
-using Imaginator.Loaders;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 
@@ -10,7 +8,7 @@ namespace Imaginator.Graphics;
 
 public static class AsciiShow
 {
-    private static readonly LoaderFactory Factory = new(new LocalLoader(), new WebLoader());
+    private static readonly LoaderFactory Factory = new();
     
     public static async Task Imaginate(string source, RenderMode mode)
     {

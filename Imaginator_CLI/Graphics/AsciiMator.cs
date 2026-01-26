@@ -12,7 +12,6 @@ namespace Imaginator.Graphics;
 
 public static class AsciiMator
 {
-    
     public static void RenderStaticImageInAscii(Image<Rgba32> image, RenderMode mode)
     {
         Console.Write(AnsiConstants.PrepareCanvas);
