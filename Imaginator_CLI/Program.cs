@@ -6,12 +6,6 @@ while (true)
     Console.Write("Write filepath or URL: ");
     var path = Console.ReadLine();
     
-    if (!File.Exists(path))
-    {
-        Console.WriteLine("File not found.");
-        continue;
-    }
-    
     Console.Write("Plain(1) or Colored(2): ");
     var input = Console.ReadLine();
     
