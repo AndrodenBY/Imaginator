@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Text;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
@@ -30,11 +31,13 @@ public static class AsciiMator
         
         var renderer = RendererFactory.RenderAscii(mode);
         var isRunning = true;
+        var stopwatch = new Stopwatch();
 
         while (isRunning)
         {
             for (int i = 0; i < gif.Frames.Count; i++)
             {
+                stopwatch.Restart();
                 
                 using (var frameImage = gif.Frames.CloneFrame(i))
                 {
@@ -44,18 +47,18 @@ public static class AsciiMator
                     Console.Write(AnsiConstants.ResetCursor + frameContent);
                 }
                 
-                var gifFrame = gif.Frames[i];
-                await Task.Delay(MediaHelper.GetDelay(gifFrame));
-
-                if (Console.KeyAvailable)
+                var gifDelay = TimeHelper.GetDelay(gif.Frames[i]);
+                var remainingDelay = (int)stopwatch.ElapsedMilliseconds - gifDelay;
+                
+                if (remainingDelay > 0)
                 {
-                    var key = Console.ReadKey(intercept: true).Key;
-                    
-                    if (key == ConsoleKey.Escape || key == ConsoleKey.Enter)
-                    {
-                        isRunning = false;
-                        break; 
-                    }
+                    await Task.Delay(remainingDelay);
+                }
+
+                if (TimeHelper.IsExitRequested())
+                {
+                    isRunning = false;
+                    break;
                 }
             }
         }

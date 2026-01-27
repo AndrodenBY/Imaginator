@@ -1,3 +1,5 @@
+using System.Text;
+using Imaginator.ColorPresets;
 using Imaginator.Constants;
 using Imaginator.Helpers;
 using Imaginator.Interfaces;
@@ -9,9 +11,9 @@ public class ColoredAsciiRenderer : IAsciiRenderer
 {
     public string RenderPixel(Rgba32 pixel)
     {
-        var ascii = AnsiColorMapper.MapToAscii(pixel); 
-        var color = AnsiColor.MakeRgb(pixel.R, pixel.G, pixel.B); 
+        var data = AnsiColorMapper.MapAscii(pixel);
+        var color = AnsiColor.MakeRgb(pixel.R, pixel.G, pixel.B);
         
-        return $"{color}{ascii}";
+        return $"{color}{data.Symbol}";
     }
 }

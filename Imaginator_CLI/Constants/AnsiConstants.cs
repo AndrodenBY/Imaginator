@@ -2,7 +2,7 @@ namespace Imaginator.Constants;
 
 public static class AnsiConstants
 {
-    private const string Escape = "\u001b[";
+    public const string Escape = "\u001b[";
     public const string ResetCursor = Escape + "H";
     private const string ResetStyle = Escape + "0m";
     private const string ClearScreen = Escape + "2J";

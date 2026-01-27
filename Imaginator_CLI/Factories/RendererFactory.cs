@@ -1,3 +1,4 @@
+using Imaginator.ColorPresets;
 using Imaginator.Enums;
 using Imaginator.Interfaces;
 using Imaginator.Renderers;
@@ -11,6 +12,9 @@ public static class RendererFactory
         return mode switch
         {
             RenderMode.Colored => new ColoredAsciiRenderer(),
+            RenderMode.RedOnly => new MonochromeAsciiRenderer(MonochromePresets.RedOnly),
+            RenderMode.GreenOnly => new MonochromeAsciiRenderer(MonochromePresets.FalloutGreen),
+            RenderMode.BlueOnly => new MonochromeAsciiRenderer(MonochromePresets.BlueOnly),
             _ => new PlainAsciiRenderer()
         };
     }

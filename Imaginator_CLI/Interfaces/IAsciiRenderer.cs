@@ -1,3 +1,4 @@
+using System.Text;
 using SixLabors.ImageSharp.PixelFormats;
 
 namespace Imaginator.Interfaces;

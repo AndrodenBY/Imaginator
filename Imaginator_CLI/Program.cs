@@ -20,3 +20,4 @@ while (true)
 }
 
 //TODO: add modes, Rainbow, Red only, Blue only, Green only(like in Fallout)
+//TODO: add hybrid caching and buffer + StringBuilder
