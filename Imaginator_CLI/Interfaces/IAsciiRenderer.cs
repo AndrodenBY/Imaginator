@@ -1,9 +1,11 @@
 using System.Text;
+using Imaginator.Helpers;
 using SixLabors.ImageSharp.PixelFormats;
 
 namespace Imaginator.Interfaces;
 
 public interface IAsciiRenderer
 {
-    string RenderPixel(Rgba32 pixel);
+    int WriteColor(Rgba32 pixel, AsciiData data, char[] target, int position);
+    char GetSymbol(AsciiData data);
 }

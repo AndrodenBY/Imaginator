@@ -21,11 +21,11 @@ public static class AsciiShow
 
             if (loadedImage.Frames.Count > 1)
             {
-                await AsciiMator.RenderAnimatedImageInAscii(loadedImage, mode);
+                await TerminalCinema.ShowAnimatedImageInAscii(loadedImage, mode);
             }
             else
             {
-                AsciiMator.RenderStaticImageInAscii(loadedImage, mode);
+                TerminalCinema.ShowStaticImageInAscii(loadedImage, mode);
             }
         }
         catch (Exception exception)

@@ -7,7 +7,7 @@ public static class AnsiConstants
     private const string ResetStyle = Escape + "0m";
     private const string ClearScreen = Escape + "2J";
     public const string HideCursor = Escape + "?25l";
-    private const string ShowCursor = Escape + "?25h";
+    public const string ShowCursor = Escape + "?25h";
     public const string FrameLineEnd = Escape + "K\n";
     public const string ForegroundRgb = Escape + "38;2;";
     public const string ResetColor = Escape + "0m";
